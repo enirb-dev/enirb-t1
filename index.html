@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<title>Neet Hub</title>
+	
+	<style>
+		body {  /* nothing for general, # for id, . for class */
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+        }
+		
+        #loginPage,
+        .pageStyleB {
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+		
+		h1 {
+			font-family: "Bookman Old Style", Bookman, Georgia, serif;
+			font-size: 32px;
+			font-weight: bold;
+		}
+		
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+		
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+		
+		button.B {
+            padding: 4px 6px;
+            margin: 2px;
+            cursor: pointer;
+		}
+		
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+		
+        .message {
+            background: #eeeeee;
+            padding: 8px;
+            margin: 5px;
+            border-radius: 8px;
+        }
+		
+        .message b {
+            display: block;
+        }
+		
+        .pageStyleB {
+            display: none;
+        }
+		
+		#emergencyBubble {
+			position: fixed;
+			right: 20px;
+			bottom: 50px;
+			
+			width: 55px;
+			height: 55px;
+			
+			border-radius: 50%;
+			border: none;
+			
+			background: #222;
+			color: white;
+			
+			font-size: 20px;
+			cursor: grab;
+			z-index: 9999;
+			
+			margin: 0;
+			padding: 0;
+			
+			user-select: none;
+			touch-action: none;
+		}
+		
+		#emergencyBubble:active {
+			cursor: grabbing;
+		}
+		
+		.mask-password {
+			-webkit-text-security: disc;
+			text-security: disc;
+		}
+	
+	</style>
+	
+	<script type="module">
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+		
+		import {
+			getDatabase,
+			ref,
+			set,
+			get,
+			push,
+			onValue,
+			onChildAdded,
+			remove
+		} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+		import {
+			getAuth,
+			createUserWithEmailAndPassword,
+			signInWithEmailAndPassword,
+			signOut,
+			onAuthStateChanged,
+			setPersistence,
+			inMemoryPersistence
+		} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+		
+		const firebaseConfig = {
+			apiKey: "AIzaSyAXkwaDRwDUKj1TlOD56LPJJWEHNbRNhSg",
+			authDomain: "enirb-tracker1.firebaseapp.com",
+			databaseURL: "https://enirb-tracker1-default-rtdb.asia-southeast1.firebasedatabase.app",
+			projectId: "enirb-tracker1",
+			storageBucket: "enirb-tracker1.firebasestorage.app",
+			messagingSenderId: "339944896956",
+			appId: "1:339944896956:web:57cb1919cf5248ee92d3b9",
+			measurementId: "G-TVL9NQQ0DD"
+		};
+		
+		const app = initializeApp(firebaseConfig);
+		const db = getDatabase(app);
+		
+		const BASE = "data1";
+		const REF = {
+			com: BASE + "/command",
+			status: BASE + "/status",
+			result: BASE + "/result",
+			time: BASE + "/time",
+			lastSeen: BASE + "/lastSeen",
+			args: BASE + "/args",
+			args2: BASE + "/command/args",
+			type2: BASE + "/command/type",
+			id2: BASE + "/command/id",
+		};
+		
+		
+		function GE(element) { return document.getElementById(element); }
+		function CE(element) { return document.createElement(element); }
+		function usernameToEmail(uname) { return uname + "@neethub.enirb.in" }
+		
+		async function update(key, value) {
+			await set(ref(db, key), value);
+		}
+		
+		async function fetch(key) {
+			const snap = await get(ref(db, key));
+			if (snap.exists()) {
+				return snap.val();
+			}
+			
+			return null;
+		}
+		
+		function showMessage(msg) {
+			GE("log").textContent = msg;
+		}
+		
+		const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+		const emptyData = {
+			id: "",
+			type: "",
+			args: ""
+		}
+		
+		function time() {
+			return Math.floor(Date.now() / 1000);
+		}
+		
+		async function sendCommand(type, args) {
+			update(REF.status, "waiting");
+			let data = {
+				"id": Math.random() * 1000000,
+				"type": type,
+				"args": args,
+				"time": time()
+			}
+			
+			await update(REF.com, data);
+			let maxA = 10;
+			
+			for (let i = 1; i <= maxA; i++) {
+				const res = await fetch(REF.status);
+				
+				if (res == "ok") {
+					update(REF.com, emptyData);
+					
+					return true;
+				}
+				
+				if (i < maxA) {
+					await delay(1000);
+				}
+			}
+			
+			update(REF.com, emptyData);
+			return false;
+		}
+		
+		window.screenshot = async function() {
+			let type = "screenshot";
+			let args = null;
+			
+			let res = await sendCommand(type, args);
+			
+			if (!res) {
+				showMessage("Timeout.")
+				return;
+			}
+			
+			let imgDat = await fetch(REF.result);
+			GE("ssImg").src = `data:image/jpeg;base64,${imgDat}`;
+			
+			update(REF.status, "");
+		}
+		
+		window.shutdown = async function() {
+			let type = "key";
+			let args = "shutdown";
+			
+			let res = await sendCommand(type, args);
+			
+			if (!res) {
+				showMessage("Timeout.")
+				return;
+			}
+			
+			update(REF.status, "");
+		}
+		
+		window.keyCommand = async function() {
+			let type = "key";
+			let args = GE("inpF").value
+			
+			let res = await sendCommand(type, args);
+			
+			if (!res) {
+				showMessage("Timeout.")
+				return;
+			}
+			
+			update(REF.status, "");
+		}
+		
+	</script>
+	
+</head>
+
+<body>
+	<h1> Tracker </h1>
+	<p></p>
+	<div id="log"></div>
+	<button onclick="screenshot()"> Get Screenshot </button>
+	<button onclick="shutdown()"> ShutDown </button>
+	<button onclick="keyCommand()"> Send Key Command </button>
+	<input id="inpF" type="text">
+	<img id="ssImg">
+</body>
+
+</html>
