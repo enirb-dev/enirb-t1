@@ -183,7 +183,8 @@
 		const emptyData = {
 			id: "",
 			type: "",
-			args: ""
+			args: "",
+			time: ""
 		}
 		
 		function time() {
@@ -194,10 +195,10 @@
 			update(REF.status, "waiting");
 			showMessage("Sent Command. Waiting...")
 			let data = {
-				"id": Math.random() * 1000000,
-				"type": type,
-				"args": args,
-				"time": time()
+				id: Math.random() * 1000000,
+				type: type,
+				args: args,
+				time: time()
 			}
 			
 			await update(REF.com, data);
@@ -260,7 +261,7 @@
 
 <body>
 	<h1> Tracker </h1>
-	<h2> Stamp: 002 </h2>
+	<h2> Stamp: 003 </h2>
 	<p></p>
 	<div id="log"></div>
 	<button onclick="screenshot()"> Get Screenshot </button>
