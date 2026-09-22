@@ -262,12 +262,12 @@
 			
 			let correctPass = `${String(d.getHours()).padStart(2, "0")}:` +
 			`${String(d.getMinutes()).padStart(2, "0")}`;
+			//console.log(correctPass);
 			
 			if (correctPass == GE("passI").value) {
 				GE("passPage").style.display = "none";
 				GE("panel").style.display = "block";
 			}
-			
 		}
 		
 	</script>
@@ -283,7 +283,7 @@
 	<div id="passPage">
 		<p> Input Pass </p>
 		<input id="passI">
-		<button onclick="passP"> Ok </button>
+		<button onclick="passP()"> Ok </button>
 	</div>
 	
 	<div id="panel" hidden>
