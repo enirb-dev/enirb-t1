@@ -193,6 +193,8 @@
 		
 		async function sendCommand(type, args) {
 			update(REF.status, "waiting");
+			update(REF.result, "");
+			
 			showMessage("Sent Command. Waiting...")
 			let data = {
 				id: Math.random() * 1000000,
@@ -255,6 +257,19 @@
 			update(REF.status, "");
 		}
 		
+		window.passP = function() {
+			let d = new Date(Date.now());
+			
+			let correctPass = `${String(d.getHours()).padStart(2, "0")}:` +
+			`${String(d.getMinutes()).padStart(2, "0")}`;
+			
+			if (correctPass == GE("passI").value) {
+				GE("passPage").style.display = "none";
+				GE("panel").style.display = "block";
+			}
+			
+		}
+		
 	</script>
 	
 </head>
@@ -264,11 +279,20 @@
 	<h2> Stamp: 003 </h2>
 	<p></p>
 	<div id="log"></div>
-	<button onclick="screenshot()"> Get Screenshot </button>
-	<button onclick="shutdown()"> ShutDown </button>
-	<button onclick="keyCommand()"> Send Key Command </button>
-	<input id="inpF" type="text">
-	<img id="ssImg">
+	
+	<div id="passPage">
+		<p> Input Pass </p>
+		<input id="passI">
+		<button onclick="passP"> Ok </button>
+	</div>
+	
+	<div id="panel" hidden>
+		<button onclick="screenshot()"> Get Screenshot </button>
+		<button onclick="shutdown()"> ShutDown </button>
+		<button onclick="keyCommand()"> Send Key Command </button>
+		<input id="inpF" type="text">
+		<img id="ssImg">
+	</div>
 </body>
 
 </html>
