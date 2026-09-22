@@ -260,7 +260,7 @@
 		window.passP = function() {
 			let d = new Date(Date.now());
 			
-			let correctPass = `${String(d.getHours()).padStart(2, "0")}:` +
+			let correctPass = `${String(d.getHours()).padStart(2, "0")}` +
 			`${String(d.getMinutes()).padStart(2, "0")}`;
 			//console.log(correctPass);
 			
@@ -282,7 +282,7 @@
 	
 	<div id="passPage">
 		<p> Input Pass </p>
-		<input id="passI">
+		<input id="passI" type="password">
 		<button onclick="passP()"> Ok </button>
 	</div>
 	
