@@ -1,0 +1,1 @@
+start "" pyw "D:\Siddharth\PythonFiles\Tracker\__main__2.py" 

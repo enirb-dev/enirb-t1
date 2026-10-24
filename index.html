@@ -13,7 +13,6 @@
             margin: 0;
         }
 		
-        #loginPage,
         .pageStyleB {
             max-width: 500px;
             margin: 50px auto;
@@ -47,21 +46,6 @@
             cursor: pointer;
 		}
 		
-        #messages {
-            height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-		
-        .message {
-            background: #eeeeee;
-            padding: 8px;
-            margin: 5px;
-            border-radius: 8px;
-        }
-		
         .message b {
             display: block;
         }
@@ -69,35 +53,6 @@
         .pageStyleB {
             display: none;
         }
-		
-		#emergencyBubble {
-			position: fixed;
-			right: 20px;
-			bottom: 50px;
-			
-			width: 55px;
-			height: 55px;
-			
-			border-radius: 50%;
-			border: none;
-			
-			background: #222;
-			color: white;
-			
-			font-size: 20px;
-			cursor: grab;
-			z-index: 9999;
-			
-			margin: 0;
-			padding: 0;
-			
-			user-select: none;
-			touch-action: none;
-		}
-		
-		#emergencyBubble:active {
-			cursor: grabbing;
-		}
 		
 		.mask-password {
 			-webkit-text-security: disc;
@@ -160,7 +115,6 @@
 		
 		function GE(element) { return document.getElementById(element); }
 		function CE(element) { return document.createElement(element); }
-		function usernameToEmail(uname) { return uname + "@neethub.enirb.in" }
 		
 		async function update(key, value) {
 			await set(ref(db, key), value);
@@ -223,7 +177,7 @@
 			}
 			
 			update(REF.com, emptyData);
-			showMessage("Timeout.")
+			showMessage("Timeout. (PC may be shutdowned or offline)");
 			return false;
 		}
 		
